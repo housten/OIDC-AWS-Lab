@@ -30,7 +30,7 @@ jobs:
       - name: Deploy the S3 Bucket
         # We use the AWS CLI to create a uniquely named S3 bucket
         run: |
-          echo "Token: ${{ steps.creds.outputs.aws-session-token }}"
+          echo "Token: ${{ steps.awscreds.outputs.aws-session-token }}"
           BUCKET_NAME="oidc-demo-bucket-${{ github.run_id }}-${{ github.run_attempt }}"
           echo "Attempting to create S3 bucket: $BUCKET_NAME"
           aws s3 mb s3://$BUCKET_NAME
