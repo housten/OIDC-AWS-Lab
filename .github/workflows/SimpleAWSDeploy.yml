@@ -4,7 +4,7 @@ name: 1. Simple AWS Deploy
 # Controls when the workflow will run
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "demo" ]
   workflow_dispatch:
 permissions: 
   id-token: write
