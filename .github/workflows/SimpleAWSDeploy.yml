@@ -6,10 +6,20 @@ on:
   push:
     branches: [ "main" ]
   workflow_dispatch:
-
+permissions: 
+  id-token: write
+  contents: read
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v5.1.0
+        with:
+        # AWS Region, e.g. us-east-2
+          aws-region: eu-central-1
+          role-to-assume: arn:aws:iam::585466297447:role/Github-action-role
+      - name: Verify Assumed Role Identity
+        run: aws sts get-caller-identity
+        
