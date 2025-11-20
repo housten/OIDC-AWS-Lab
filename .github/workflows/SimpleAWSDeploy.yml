@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Configure AWS Credentials"
+        id: awscreds
         uses: aws-actions/configure-aws-credentials@v5.1.0
         with:
           aws-region:  eu-central-1
@@ -24,4 +25,21 @@ jobs:
 
       - name: Verify assumed identity
         run: aws sts get-caller-identity
-          
+
+        
+      - name: Deploy the S3 Bucket
+        # We use the AWS CLI to create a uniquely named S3 bucket
+        run: |
+          echo "Token: ${{ steps.creds.outputs.aws-session-token }}"
+          BUCKET_NAME="oidc-demo-bucket-${{ github.run_id }}-${{ github.run_attempt }}"
+          echo "Attempting to create S3 bucket: $BUCKET_NAME"
+          aws s3 mb s3://$BUCKET_NAME
+          echo "S3 bucket $BUCKET_NAME created successfully."        
+              
+      - name: Clean up the S3 Bucket (For Demo Purposes)
+        if: always() # Run cleanup even if previous step fails
+        run: |
+          BUCKET_NAME="oidc-demo-bucket-${{ github.run_id }}-${{ github.run_attempt }}"
+          # You might need to delete contents first if you deployed files
+          aws s3 rb s3://$BUCKET_NAME --force
+          echo "S3 bucket $BUCKET_NAME deleted."
