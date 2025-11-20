@@ -22,4 +22,17 @@ jobs:
           role-to-assume: arn:aws:iam::585466297447:role/Github-action-role
       - name: Verify Assumed Role Identity
         run: aws sts get-caller-identity
+      - name: Deploy the S3 bucket
+        run: |
+          BUCKET_NAME="oidc-demo-bucket-${{ github.run_id }}-${{ github.run_attempt }}"
+          echo "Attempting to create S3 bucket: $BUCKET_NAME"
+          aws s3 mb s3://$BUCKET_NAME
+          echo "S3 bucket $BUCKET_NAME created successfully."
+      - name: Clean up the S3 Bucket (For Demo Purposes)
+        if: always() # Run cleanup even if previous step fails
+        run: |
+          BUCKET_NAME="oidc-demo-bucket-${{ github.run_id }}-${{ github.run_attempt }}"
+          # You might need to delete contents first if you deployed files
+          aws s3 rb s3://$BUCKET_NAME --force
+          echo "S3 bucket $BUCKET_NAME deleted."      
         
