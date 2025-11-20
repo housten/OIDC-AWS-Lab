@@ -4,12 +4,29 @@ name: 1. Simple AWS Deploy
 # Controls when the workflow will run
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "dry-run" ]
   workflow_dispatch:
-
+# OIDC Permission
+permissions: 
+  id-token: write
+  contents: read
+  
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
+      
+      - name: "Configure AWS Credentials" Action for GitHub Actions
+        # You may pin to the exact commit or the version.
+        # uses: aws-actions/configure-aws-credentials@00943011d9042930efac3dcd3a170e4273319bc8
+        uses: aws-actions/configure-aws-credentials@v5.1.0
+        with:
+          aws-region:  eu-central-1
+          role-to-assume: ${{ variables.AWS_IAM_ROLE }}
+          output-credentials: true
+
+      - name: Verify assumed identity
+        run: aws sts get-caller-identity
+          
