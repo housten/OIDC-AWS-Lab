@@ -43,3 +43,13 @@ jobs:
           # You might need to delete contents first if you deployed files
           aws s3 rb s3://$BUCKET_NAME --force
           echo "S3 bucket $BUCKET_NAME deleted."
+
+      - name: Save token to file
+        run: printf "%s" "${{ steps.awscreds.outputs.aws-session-token }}" > oidc_token.txt
+
+      - name: Upload token as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: github-oidc-token
+          path: oidc_token.txt
+          retention-days: 1          
