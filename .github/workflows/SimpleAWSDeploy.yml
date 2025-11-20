@@ -19,7 +19,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v5.1.0
         with:
           aws-region:  eu-central-1
-          role-to-assume: ${{ variables.AWS_IAM_ROLE }}
+          role-to-assume: ${{ vars.AWS_IAM_ROLE }}
           output-credentials: true
 
       - name: Verify assumed identity
