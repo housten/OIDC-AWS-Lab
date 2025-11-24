@@ -14,15 +14,15 @@ jobs:
     env:
       API_BASE: https://${{vars.AppId}}.execute-api.eu-north-1.amazonaws.com/prod
     steps:
-      - name: Request GitHub OIDC token (audience=lab-api)
+      - name: Request GitHub OIDC token (audience=metrics-lab-api)
         id: oidc
         shell: bash
         run: |
           set -e
           RESP=$(curl -s -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-                 "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=lab-api")
+                 "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=metrics-lab-api")
           TOKEN=$(echo "$RESP" | jq -r '.value')
-          echo "::add-mask::$TOKEN"
+          echo "$TOKEN"
           echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
 
       - name: Show JWT header and payload (for learning)
