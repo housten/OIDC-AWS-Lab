@@ -1,0 +1,50 @@
+name: Test Secure AWS OIDC API
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write   # <-- required for OIDC token
+  contents: read
+
+jobs:
+  call-secure-api:
+    runs-on: ubuntu-latest
+    env:
+      API_BASE: https://${{vars.AppId}}.execute-api.eu-north-1.amazonaws.com/prod
+    steps:
+      - name: Request GitHub OIDC token (audience=lab-api)
+        id: oidc
+        shell: bash
+        run: |
+          set -e
+          RESP=$(curl -s -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+                 "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=lab-api")
+          TOKEN=$(echo "$RESP" | jq -r '.value')
+          echo "::add-mask::$TOKEN"
+          echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
+
+      - name: Show JWT header and payload (for learning)
+        run: |
+          HP=$(echo "${{ steps.oidc.outputs.token }}" | awk -F. '{print $1"."$2}')
+          echo "JWT header.payload: $HP"
+
+      - name: Call secure API route
+        run: |
+          curl -v -s -X POST "$API_BASE/lab/results-secure" \
+            -H "authorization: Bearer ${{ steps.oidc.outputs.token }}" \
+            -H "content-type: application/json" \
+            -d '{"status":"pass","suite":"secure"}' | tee post.json
+
+      - name: Read back stored result
+        run: |
+          TEST_ID=$(jq -r '.item.testId // .TestId // empty' post.json)
+          echo "testId=$TEST_ID"
+          curl -s "$API_BASE/lab/results-secure?testId=$TEST_ID" \
+            -H "authorization: Bearer ${{ steps.oidc.outputs.token }}" | jq .
+
+      - name: Upload token for manual jwt.ms inspection (optional)
+        uses: actions/upload-artifact@v4
+        with:
+          name: github-oidc-token
+          path: <(echo "${{ steps.oidc.outputs.token }}")
+          retention-days: 1
