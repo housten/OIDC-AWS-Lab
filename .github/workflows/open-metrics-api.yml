@@ -1,6 +1,8 @@
 name: Lab Part 1 — call open route
 
 on:
+  push:
+    branches: [ "dry-run" ]
   workflow_dispatch:
 
 permissions:
