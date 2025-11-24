@@ -1,0 +1,44 @@
+
+name: OIDC S3 Deployment Demo
+
+on:
+  push:
+    branches:
+      - main
+permissions:
+  id-token: write # CRITICAL: Required to request the OIDC JWT token
+  contents: read  # Required to check out the repository code
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          # Paste the Role ARN copied from AWS IAM in Step 2 here
+          role-to-assume: arn:aws:iam::<AccountID>:role/GitHubActionsOIDC-S3-Deployer
+          aws-region: us-east-1 # Use the region of your choice
+
+      - name: Verify Assumed Role Identity (Optional Check)
+        run: aws sts get-caller-identity
+
+      - name: Deploy the S3 Bucket
+        # We use the AWS CLI to create a uniquely named S3 bucket
+        run: |
+          BUCKET_NAME="oidc-demo-bucket-${{ github.run_id }}-${{ github.run_attempt }}"
+          echo "Attempting to create S3 bucket: $BUCKET_NAME"
+          aws s3 mb s3://$BUCKET_NAME
+          echo "S3 bucket $BUCKET_NAME created successfully."
+          
+      - name: Clean up the S3 Bucket (For Demo Purposes)
+        if: always() # Run cleanup even if previous step fails
+        run: |
+          BUCKET_NAME="oidc-demo-bucket-${{ github.run_id }}-${{ github.run_attempt }}"
+          # You might need to delete contents first if you deployed files
+          aws s3 rb s3://$BUCKET_NAME --force
+          echo "S3 bucket $BUCKET_NAME deleted."
