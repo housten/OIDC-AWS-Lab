@@ -10,7 +10,7 @@ jobs:
   call-open-api:
     runs-on: ubuntu-latest
     env:
-      API_BASE: https://${{vars.appId}}.execute-api.eu-north-1.amazonaws.com/prod
+      API_BASE: https://${{vars.AppId}}}.execute-api.eu-north-1.amazonaws.com/prod
     steps:
       - name: POST to open route (no auth)
         run: |
