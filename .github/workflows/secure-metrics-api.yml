@@ -1,5 +1,7 @@
 name: Test Secure AWS OIDC API
 on:
+  push:
+    branches: [ "dry-run" ]
   workflow_dispatch:
 
 permissions:
