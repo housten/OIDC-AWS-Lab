@@ -1,0 +1,26 @@
+name: Lab Part 1 — call open route
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  call-open-api:
+    runs-on: ubuntu-latest
+    env:
+      API_BASE: https://${{vars.appId}}.execute-api.eu-north-1.amazonaws.com/prod
+    steps:
+      - name: POST to open route (no auth)
+        run: |
+          curl -s -X POST "$API_BASE/lab/results" \
+            -H "content-type: application/json" \
+            -d "{\"owner\":\"${{ github.repository_owner }}\",\"repo\":\"${{ github.repository }}\",\"status\":\"pass\",\"suite\":\"open\"}" \
+            | tee post.json
+
+      - name: Read back (no auth)
+        run: |
+          TEST_ID=$(jq -r '.item.testId // .TestId // empty' post.json)
+          echo "testId=$TEST_ID"
+          curl -s "$API_BASE/lab/results?owner=${{ github.repository_owner }}&repo=${{ github.repository }}&testId=$TEST_ID" | jq .
