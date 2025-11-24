@@ -29,7 +29,15 @@ jobs:
         run: |
           HP=$(echo "${{ steps.oidc.outputs.token }}" | awk -F. '{print $1"."$2}')
           echo "JWT header.payload: $HP"
+          printf "%s" "${{ steps.oidc.outputs.token }}" > oidc_token.txt
+          chmod 600 oidc_token.txt
 
+      - name: Upload token for manual jwt.ms inspection (optional)
+        uses: actions/upload-artifact@v4
+        with:
+          name: github-oidc-token
+          path: oidc_token.txt
+          
       - name: Call secure API route
         run: |
           curl -v -s -X POST "$API_BASE/lab/results-secure" \
@@ -44,9 +52,4 @@ jobs:
           curl -s "$API_BASE/lab/results-secure?testId=$TEST_ID" \
             -H "authorization: Bearer ${{ steps.oidc.outputs.token }}" | jq .
 
-      - name: Upload token for manual jwt.ms inspection (optional)
-        uses: actions/upload-artifact@v4
-        with:
-          name: github-oidc-token
-          path: <(echo "${{ steps.oidc.outputs.token }}")
-          retention-days: 1
+   
