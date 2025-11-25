@@ -20,7 +20,7 @@ jobs:
       - name: Configure AWS Credentials using OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          # Paste the Role ARN copied from AWS IAM in Step 2 here
+          # Paste the Role ARN copied from AWS IAM here
           role-to-assume: arn:aws:iam::<AccountID>:role/GitHubActionsOIDC-S3-Deployer
           aws-region: us-east-1 # Use the region of your choice
 
