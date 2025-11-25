@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 # OIDC Permission
 permissions: 
-  id-token: write
+  id-token: write # <-- This tells Github to generate the OIDC token
   contents: read
   
 jobs:
