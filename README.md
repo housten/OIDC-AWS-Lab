@@ -1,7 +1,7 @@
 
 # 🧪 OIDC + AWS API Gateway Lab
 
-This lab shows how to add authentication to an AWS API Gateway endpoint **without long-lived secrets** by using OIDC.
+This lab shows how to add authentication to an AWS API Gateway endpoint **without long-lived secrets** by using Github's OIDC token.
 
 You’ll do it in **two phases**:
 
