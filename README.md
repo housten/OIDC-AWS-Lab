@@ -94,8 +94,7 @@ jobs:
     env:
       API_BASE: https://7jxbevu329.execute-api.eu-north-1.amazonaws.com/prod
     steps:
-    # 2. Add this step to Request OIDC token and use it to call secure route
-    steps:
+      # 2. Add this step to Request OIDC token and use it to call secure route
       - name: Request GitHub OIDC token (audience=metrics-lab-api)
         id: oidc
         shell: bash
@@ -120,7 +119,7 @@ jobs:
           echo "testId=$TEST_ID"
           curl -s \
             -H "authorization: Bearer ${{ steps.oidc.outputs.token }}" \ # <-- 5. Add the token in Authorization header
-            "$API_BASE/lab/results-secure?testId=$TEST_ID" | jq . #   <-- 6. Change to secure route
+            "$API_BASE/lab/results-secure?testId=$TEST_ID" | jq .        # <-- 6. Change to secure route
 ```
 
 2. Run it.  
