@@ -204,10 +204,11 @@ jobs:
 
 ---
 
-✅ **Next:**  
-Try to break it! Remove the `id-token: write` permission and see how the secure route rejects the call.  
-Try changing the audience in the token request to something else and see how the secure route rejects it.
-Read the IAM vs JWT guide in this repo to see more about different ways to use OIDC when calling services.
+**Next:**
+* Try to break it! Remove the `id-token: write` permission and see how the secure route rejects the call.  
+* Try changing the audience in the token request to something else and see how the secure route rejects it.
+* Read the IAM vs JWT guide in this repo to see more about different ways to use OIDC when calling services.
+
 ---
 
 Happy experimenting! 🎉
