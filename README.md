@@ -77,6 +77,7 @@ See how there is **no authentication** in the requests. No headers, no tokens.
 ---
 
 ## 🔐 Phase 2 – Make it secure
+Behind the scenes, this requires that a JWT Authorizer has been created to secure the routes to the AWS api gateway. This is typically something that has to be ordered from an operations team.
 
 1. update your workflow: `.github/workflows/call-api.yml` or make a copy of it if you want to keep both versions.
 
@@ -126,6 +127,7 @@ jobs:
    This time the request is **authorized via OIDC**.  
 
 ## 🔐 Phase 3 – Investigate the token
+Normally the token is kept hidden and protected. But for the purpose of this lab it can be interesting to see what the Github OIDC token actually contains.
 
 1. update your workflow: `.github/workflows/call-api.yml` or make a copy of it if you want to keep both versions.
 
@@ -205,6 +207,7 @@ jobs:
 ✅ **Next:**  
 Try to break it! Remove the `id-token: write` permission and see how the secure route rejects the call.  
 Try changing the audience in the token request to something else and see how the secure route rejects it.
+Read the IAM vs JWT guide in this repo to see more about different ways to use OIDC when calling services.
 ---
 
 Happy experimenting! 🎉
