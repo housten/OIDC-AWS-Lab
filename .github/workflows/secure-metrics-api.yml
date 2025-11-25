@@ -49,7 +49,8 @@ jobs:
         run: |
           TEST_ID=$(jq -r '.item.testId // .TestId // empty' post.json)
           echo "testId=$TEST_ID"
-          curl -s "$API_BASE/lab/results-secure?testId=$TEST_ID" \
-            -H "authorization: Bearer ${{ steps.oidc.outputs.token }}" | jq .
+          curl -s \
+            -H "authorization: Bearer ${{ steps.oidc.outputs.token }}" \
+            "$API_BASE/lab/results-secure?testId=$TEST_ID" | jq .
 
    
