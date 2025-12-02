@@ -24,10 +24,10 @@ Log into your AWS where you have permissions to create a resource (S3 is what we
 
 ## Configure Github Workflow
 Now we connect our pipeline to the AWS role.
-1. Open the simple workflow yaml file
+1. Open the SimpleAWSS3Deploy yaml file in the .github/workflows folder.
 1. Add the following line to the `Permissions:` section.<br />
    `  id-token: write # CRITICAL: Required to request the OIDC JWT token`
-1. Add the following action directly after the `steps:` tag.  This is the AWS login step that will connect the github token to the AWS Role.
+1. Add the following action directly after the checkout step in the `steps:` section.  This is the AWS login step that will connect the github token to the AWS Role.
 ``` yaml
       - name: "Configure AWS Credentials"
         id: awscreds
@@ -37,11 +37,11 @@ Now we connect our pipeline to the AWS role.
           role-to-assume: << YOUR AWS ARN FROM STEP 3 ABOVE GOES HERE >>
           output-credentials: true
 ```
-1. Add the following action directly after the `steps:` tag. This will just output some details from your AWS session to confirm your identity is set up.
+4. Add the following action directly after the `steps:` tag. This will just output some details from your AWS session to confirm your identity is set up.
 ```
       - name: Verify Assumed Role Identity (Optional Check)
         run: aws sts get-caller-identity
 ```
 Notice that we don't have to add any references to the identity. The AWS actions and cli automatically pass along the authorization information.
-1. Commit the workflow
-1. Go to the actions tab and trigger it if it isn't already running.
+5. Commit the workflow
+6. Go to the actions tab and trigger it if it isn't already running.
