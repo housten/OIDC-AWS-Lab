@@ -41,35 +41,3 @@ jobs:
           aws s3 rb s3://$BUCKET_NAME --force
           echo "S3 bucket $BUCKET_NAME deleted."
 
-name: OIDC S3 Deployment Demo
-
-on:
-  push:
-    branches:
-      - main
-permissions:
-  contents: read  # Required to check out the repository code
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Deploy the S3 Bucket
-        # We use the AWS CLI to create a uniquely named S3 bucket
-        run: |
-          BUCKET_NAME="oidc-demo-bucket-${{ github.run_id }}-${{ github.run_attempt }}"
-          echo "Attempting to create S3 bucket: $BUCKET_NAME"
-          aws s3 mb s3://$BUCKET_NAME
-          echo "S3 bucket $BUCKET_NAME created successfully."
-          
-      - name: Clean up the S3 Bucket (For Demo Purposes)
-        if: always() # Run cleanup even if previous step fails
-        run: |
-          BUCKET_NAME="oidc-demo-bucket-${{ github.run_id }}-${{ github.run_attempt }}"
-          # You might need to delete contents first if you deployed files
-          aws s3 rb s3://$BUCKET_NAME --force
-          echo "S3 bucket $BUCKET_NAME deleted."
