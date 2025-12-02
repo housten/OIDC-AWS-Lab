@@ -28,7 +28,7 @@ jobs:
           
       - name: POST to open route (no auth)
         run: |
-          curl -s -X POST "$API_BASE/lab/results" \
+          curl -s -X POST "$API_BASE/lab/results-secure" \
             -H "authorization: Bearer ${{ steps.oidc.outputs.token }}" \
             -H "content-type: application/json" \
             -d "{\"owner\":\"${{ github.repository_owner }}\",\"repo\":\"${{ github.repository }}\",\"status\":\"pass\",\"suite\":\"open\"}" \
@@ -41,4 +41,4 @@ jobs:
           echo "testId=$TEST_ID"
           curl -s \
            -H "authorization: Bearer ${{ steps.oidc.outputs.token }}" \
-          "$API_BASE/lab/results?owner=${{ github.repository_owner }}&repo=${{ github.repository }}&testId=$TEST_ID" | jq .
+          "$API_BASE/lab/results-secure?owner=${{ github.repository_owner }}&repo=${{ github.repository }}&testId=$TEST_ID" | jq .
