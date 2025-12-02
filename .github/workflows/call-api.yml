@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  id-token: write  # <--- 1. Add this so GitHub can issue OIDC tokens
   contents: read
 
 jobs:
@@ -14,9 +15,21 @@ jobs:
     env:
       API_BASE: https://${{vars.AppId}}.execute-api.eu-north-1.amazonaws.com/prod
     steps:
+      - name: Request GitHub OIDC token (audience=metrics-lab-api)
+        id: oidc
+        shell: bash
+        run: |
+          set -e
+          RESP=$(curl -s -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+                 "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=metrics-lab-api")
+          TOKEN=$(echo "$RESP" | jq -r '.value')
+          echo "$TOKEN"
+          echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
+          
       - name: POST to open route (no auth)
         run: |
           curl -s -X POST "$API_BASE/lab/results" \
+            -H "authorization: Bearer ${{ steps.oidc.outputs.token }}" \
             -H "content-type: application/json" \
             -d "{\"owner\":\"${{ github.repository_owner }}\",\"repo\":\"${{ github.repository }}\",\"status\":\"pass\",\"suite\":\"open\"}" \
             | tee post.json
@@ -24,6 +37,8 @@ jobs:
       - name: Read back (no auth)
         run: |
           TEST_ID=$(jq -r '.item.testId // .TestId // empty' post.json)
+          
           echo "testId=$TEST_ID"
           curl -s \
+           -H "authorization: Bearer ${{ steps.oidc.outputs.token }}" \
           "$API_BASE/lab/results?owner=${{ github.repository_owner }}&repo=${{ github.repository }}&testId=$TEST_ID" | jq .
