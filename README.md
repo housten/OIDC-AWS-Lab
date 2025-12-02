@@ -14,7 +14,15 @@ You’ll do it in **two phases**:
 
 - A GitHub repository you can edit and run workflows in.
 - `jq` pre-installed in the GitHub runner (already true for hosted runners).
-- an aws role with OIDC trust established as per [the main README](../README.md).
+- an aws role with OIDC trust established .
+
+---
+## 💾 Get the code
+
+- Make sure you are signed in to Github
+- Click on the Use this Template button and choose somewhere to place the code
+- Navigate to your new repository
+
 
 ---
 
