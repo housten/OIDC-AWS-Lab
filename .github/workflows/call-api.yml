@@ -25,6 +25,18 @@ jobs:
           TOKEN=$(echo "$RESP" | jq -r '.value')
           echo "$TOKEN"
           echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
+      - name: Show JWT header and payload (for learning)
+        run: |
+          HP=$(echo "${{ steps.oidc.outputs.token }}" | awk -F. '{print $1"."$2}')
+          echo "JWT header.payload: $HP"
+          printf "%s" "${{ steps.oidc.outputs.token }}" > oidc_token.txt
+          chmod 600 oidc_token.txt
+# 2. add this to upload the token as an artifact
+      - name: Upload token for manual jwt.ms inspection (optional)
+        uses: actions/upload-artifact@v4
+        with:
+          name: github-oidc-token
+          path: oidc_token.txt
           
       - name: POST to open route (no auth)
         run: |
