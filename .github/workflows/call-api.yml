@@ -2,7 +2,7 @@ name: Call to AWS API-Gateway
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "live-demo" ]
   workflow_dispatch:
 
 permissions:
