@@ -6,11 +6,11 @@ on:
   workflow_dispatch:
 
 permissions:
-  id-token: write # Triggers OIDC Token
+  id-token: write   # <-- required for OIDC token
   contents: read
 
 jobs:
-  call-open-api:
+  call-secure-api:
     runs-on: ubuntu-latest
     env:
       API_BASE: https://${{vars.AppId}}.execute-api.eu-north-1.amazonaws.com/prod
@@ -25,31 +25,33 @@ jobs:
           TOKEN=$(echo "$RESP" | jq -r '.value')
           echo "$TOKEN"
           echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
-          
+
       - name: Show JWT header and payload (for learning)
         run: |
           HP=$(echo "${{ steps.oidc.outputs.token }}" | awk -F. '{print $1"."$2}')
           echo "JWT header.payload: $HP"
           printf "%s" "${{ steps.oidc.outputs.token }}" > oidc_token.txt
           chmod 600 oidc_token.txt
+
       - name: Upload token for manual jwt.ms inspection (optional)
         uses: actions/upload-artifact@v4
         with:
           name: github-oidc-token
           path: oidc_token.txt
           
-      - name: POST to open route (no auth)
+      - name: Call secure API route
         run: |
-          curl -s -X POST "$API_BASE/lab/results-secure" \
-            -H "authorization: Bearer ${{ steps.oidc.outputs.token }}" \        
+          curl -v -s -X POST "$API_BASE/lab/results-secure" \
+            -H "authorization: Bearer ${{ steps.oidc.outputs.token }}" \
             -H "content-type: application/json" \
-            -d "{\"owner\":\"${{ github.repository_owner }}\",\"repo\":\"${{ github.repository }}\",\"status\":\"pass\",\"suite\":\"open\"}" \
-            | tee post.json
+            -d '{"status":"pass","suite":"secure"}' | tee post.json
 
-      - name: Read back (no auth)
+      - name: Read back stored result
         run: |
           TEST_ID=$(jq -r '.item.testId // .TestId // empty' post.json)
           echo "testId=$TEST_ID"
           curl -s \
             -H "authorization: Bearer ${{ steps.oidc.outputs.token }}" \
-          "$API_BASE/lab/results-secure?owner=${{ github.repository_owner }}&repo=${{ github.repository }}&testId=$TEST_ID" | jq .
+            "$API_BASE/lab/results-secure?testId=$TEST_ID" | jq .
+
+   
