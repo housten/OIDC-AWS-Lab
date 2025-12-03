@@ -4,8 +4,9 @@ name: OIDC S3 Deployment Demo
 on:
   push:
     branches:
-      - main
+      - afternoon-demo
 permissions:
+  id-token: write # <- triggers OIDC token
   contents: read  # Required to check out the repository code
 
 jobs:
@@ -15,7 +16,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+        
+      - name: "Configure AWS Credentials"
+        id: awscreds
+        uses: aws-actions/configure-aws-credentials@v5.1.0
+        with: 
+          aws-region: eu-central-1
+          role-to-assume: arn:aws:iam::140977286959:role/Github-OIDC-Actions
+          output-credentials: true
+            
       - name: Deploy the S3 Bucket
         # We use the AWS CLI to create a uniquely named S3 bucket
         run: |
